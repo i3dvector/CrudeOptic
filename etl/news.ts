@@ -7,7 +7,7 @@
  */
 import { createClient } from "@supabase/supabase-js";
 import Parser from "rss-parser";
-import { extractCountries, classifySeverity, detectChokepoint } from "../src/lib/news-geo";
+import { extractCountries, classifySeverity, detectChokepoint } from "../src/lib/news-geo.ts";
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,

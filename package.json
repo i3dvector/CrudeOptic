@@ -7,13 +7,13 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "etl:prices": "npx tsx etl/prices.ts",
-    "etl:news": "npx tsx etl/news.ts",
-    "etl:eia": "npx tsx etl/eia.ts",
-    "etl:fred": "npx tsx etl/fred.ts",
-    "etl:comtrade": "npx tsx etl/comtrade.ts",
-    "etl:pump": "npx tsx etl/pump-prices.ts",
-    "seed": "npx tsx scripts/seed-annual-data.ts"
+    "etl:prices": "node --env-file=.env.local --import tsx/cjs etl/prices.ts",
+    "etl:news": "node --env-file=.env.local --import tsx/cjs etl/news.ts",
+    "etl:eia": "node --env-file=.env.local --import tsx/cjs etl/eia.ts",
+    "etl:fred": "node --env-file=.env.local --import tsx/cjs etl/fred.ts",
+    "etl:comtrade": "node --env-file=.env.local --import tsx/cjs etl/comtrade.ts",
+    "etl:pump": "node --env-file=.env.local --import tsx/cjs etl/pump-prices.ts",
+    "seed": "node --env-file=.env.local --import tsx/cjs scripts/seed-annual-data.ts"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.45.0",
