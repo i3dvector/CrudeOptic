@@ -17,19 +17,19 @@ jobs:
           cache: 'npm'
       - run: npm ci
       - name: Fetch EIA data
-        run: node --import tsx/cjs etl/eia.ts
+        run: npx tsx etl/eia.ts
         env:
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
           EIA_API_KEY: ${{ secrets.EIA_API_KEY }}
       - name: Fetch FRED prices
-        run: node --import tsx/cjs etl/fred.ts
+        run: npx tsx etl/fred.ts
         env:
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
           FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
       - name: Fetch Comtrade trade flows
-        run: node --import tsx/cjs etl/comtrade.ts
+        run: npx tsx etl/comtrade.ts
         continue-on-error: true   # Requires paid Comtrade subscription key
         env:
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
