@@ -70,8 +70,8 @@ export default function WorldMap({
   );
 
   const handleMouseEnter = useCallback(
-    (geo: { properties: { numeric?: string } }) => {
-      const iso = NUMERIC_TO_ISO2[geo.properties.numeric ?? ""];
+    (geo: { id?: string }) => {
+      const iso = NUMERIC_TO_ISO2[geo.id ?? ""];
       if (iso) {
         onCountryHover(iso);
         const name = COUNTRIES[iso]?.name ?? iso;
@@ -92,8 +92,8 @@ export default function WorldMap({
   }, [onCountryHover]);
 
   const handleClick = useCallback(
-    (geo: { properties: { numeric?: string } }) => {
-      const iso = NUMERIC_TO_ISO2[geo.properties.numeric ?? ""];
+    (geo: { id?: string }) => {
+      const iso = NUMERIC_TO_ISO2[geo.id ?? ""];
       if (iso) {
         router.push(`/country/${iso.toLowerCase()}`);
       }
@@ -117,7 +117,7 @@ export default function WorldMap({
           <Geographies geography={GEO_URL}>
             {({ geographies }) =>
               geographies.map((geo) => {
-                const iso = NUMERIC_TO_ISO2[geo.properties.numeric ?? ""];
+                const iso = NUMERIC_TO_ISO2[geo.id ?? ""];
                 const isHovered = iso === hoveredCountry;
 
                 return (
