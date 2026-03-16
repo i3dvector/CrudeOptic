@@ -38,7 +38,7 @@ interface GDELTResponse {
 
 async function fetchGDELT(): Promise<GDELTArticle[]> {
   try {
-    const res = await fetch(GDELT_QUERY);
+    const res = await fetch(GDELT_QUERY, { signal: AbortSignal.timeout(30_000) });
     if (!res.ok) {
       console.warn(`[ETL:news] GDELT returned ${res.status}`);
       return [];
@@ -56,7 +56,12 @@ async function fetchRSSFeeds(): Promise<Array<{ title: string; url: string; sour
 
   for (const feed of RSS_FEEDS) {
     try {
-      const parsed = await parser.parseURL(feed.url);
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 30_000);
+      const res = await fetch(feed.url, { signal: controller.signal });
+      clearTimeout(timeout);
+      const xml = await res.text();
+      const parsed = await parser.parseString(xml);
       for (const item of (parsed.items ?? []).slice(0, 15)) {
         results.push({
           title: item.title ?? "",
