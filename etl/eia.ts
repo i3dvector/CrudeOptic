@@ -1,7 +1,7 @@
 /**
  * ETL: EIA Open Data
- * Fetches production, imports, exports, reserves from EIA API
- * Writes to Supabase `country_production`, `trade_flows`, `reserves`
+ * Fetches crude oil production by country
+ * Writes to Supabase `country_production`
  * Schedule: Daily via GitHub Actions
  */
 import { createClient } from "@supabase/supabase-js";
@@ -14,30 +14,29 @@ const supabase = createClient(
 const EIA_API_KEY = process.env.EIA_API_KEY!;
 const EIA_BASE = "https://api.eia.gov/v2";
 
-interface EIAResponse {
-  response: {
-    data: Array<{
-      period: string;
-      value: number;
-      "area-name"?: string;
-      areaName?: string;
-    }>;
-  };
+interface EIARecord {
+  period: string;
+  value: string | number;
+  unit?: string;
+  countryRegionName?: string;
 }
 
-async function fetchEIA(endpoint: string, params: Record<string, string>): Promise<EIAResponse> {
-  const url = new URL(`${EIA_BASE}/${endpoint}`);
+interface EIAResponse {
+  response: { data: EIARecord[] };
+}
+
+async function fetchEIA(params: Record<string, string>): Promise<EIAResponse> {
+  const url = new URL(`${EIA_BASE}/international/data`);
   url.searchParams.set("api_key", EIA_API_KEY);
   for (const [k, v] of Object.entries(params)) {
     url.searchParams.set(k, v);
   }
-
   const res = await fetch(url.toString());
   if (!res.ok) throw new Error(`EIA API ${res.status}: ${await res.text()}`);
-  return res.json();
+  return res.json() as Promise<EIAResponse>;
 }
 
-/** Country name → ISO mapping (EIA uses full names) */
+/** EIA countryRegionName → ISO2 */
 const EIA_COUNTRY_MAP: Record<string, string> = {
   "United States": "US",
   "Saudi Arabia": "SA",
@@ -73,98 +72,68 @@ const EIA_COUNTRY_MAP: Record<string, string> = {
   "Egypt": "EG",
   "Thailand": "TH",
   "Australia": "AU",
+  "Malaysia": "MY",
+  "Pakistan": "PK",
+  "Singapore": "SG",
+  "South Africa": "ZA",
+  "Turkey": "TR",
+  "Netherlands": "NL",
+  "Poland": "PL",
 };
 
 async function fetchProduction() {
-  console.log("[ETL:eia] Fetching global crude production...");
+  console.log("[ETL:eia] Fetching global crude oil production (TBPD)...");
 
-  try {
-    const data = await fetchEIA("international/data", {
-      "frequency": "annual",
-      "data[0]": "value",
-      "facets[productId][]": "57",
-      "facets[activityId][]": "1",
-      "sort[0][column]": "period",
-      "sort[0][direction]": "desc",
-      "length": "500",
-    });
+  const data = await fetchEIA({
+    "frequency": "annual",
+    "data[0]": "value",
+    "facets[productId][]": "57",   // Crude oil including lease condensate
+    "facets[activityId][]": "1",   // Production
+    "facets[unit][]": "TBPD",      // Thousand barrels per day
+    "sort[0][column]": "period",
+    "sort[0][direction]": "desc",
+    "length": "2000",
+  });
 
-    const rows = data.response.data
-      .filter((d) => {
-        const name = d["area-name"] || d.areaName || "";
-        return EIA_COUNTRY_MAP[name] && d.value > 0;
-      })
-      .map((d) => {
-        const name = d["area-name"] || d.areaName || "";
-        return {
-          iso: EIA_COUNTRY_MAP[name],
-          year: parseInt(d.period),
-          production_bpd: Math.round(d.value * 1000),
-          source: "EIA",
-          updated_at: new Date().toISOString(),
-        };
-      });
+  // Deduplicate by (iso, year) — keep highest value per pair
+  const seen = new Map<string, { iso: string; year: number; production_bpd: number; source: string; updated_at: string }>();
 
-    if (rows.length > 0) {
-      const { error } = await supabase
-        .from("country_production")
-        .upsert(rows, { onConflict: "iso,year" });
+  for (const d of data.response.data) {
+    const iso = EIA_COUNTRY_MAP[d.countryRegionName ?? ""];
+    const val = parseFloat(String(d.value));
+    if (!iso || isNaN(val) || val <= 0) continue;
 
-      if (error) console.error("[ETL:eia] production upsert error:", error);
-      else console.log(`[ETL:eia] Upserted ${rows.length} production records`);
+    const year = parseInt(d.period);
+    const key = `${iso}:${year}`;
+    const bpd = Math.round(val * 1000);
+
+    const existing = seen.get(key);
+    if (!existing || bpd > existing.production_bpd) {
+      seen.set(key, { iso, year, production_bpd: bpd, source: "EIA", updated_at: new Date().toISOString() });
     }
-  } catch (err) {
-    console.error("[ETL:eia] Production fetch failed:", err);
   }
-}
 
-async function fetchReserves() {
-  console.log("[ETL:eia] Fetching proven reserves...");
+  const rows = Array.from(seen.values());
 
-  try {
-    const data = await fetchEIA("international/data", {
-      "frequency": "annual",
-      "data[0]": "value",
-      "facets[productId][]": "57",
-      "facets[activityId][]": "6",
-      "sort[0][column]": "period",
-      "sort[0][direction]": "desc",
-      "length": "500",
-    });
-
-    const rows = data.response.data
-      .filter((d) => {
-        const name = d["area-name"] || d.areaName || "";
-        return EIA_COUNTRY_MAP[name] && d.value > 0;
-      })
-      .map((d) => {
-        const name = d["area-name"] || d.areaName || "";
-        return {
-          iso: EIA_COUNTRY_MAP[name],
-          year: parseInt(d.period),
-          proven_reserves_bbl: d.value * 1_000_000_000,
-          source: "EIA",
-          updated_at: new Date().toISOString(),
-        };
-      });
-
-    if (rows.length > 0) {
-      const { error } = await supabase
-        .from("reserves")
-        .upsert(rows, { onConflict: "iso,year" });
-
-      if (error) console.error("[ETL:eia] reserves upsert error:", error);
-      else console.log(`[ETL:eia] Upserted ${rows.length} reserves records`);
-    }
-  } catch (err) {
-    console.error("[ETL:eia] Reserves fetch failed:", err);
+  if (rows.length === 0) {
+    console.warn("[ETL:eia] No production rows matched — check API response");
+    return;
   }
+
+  for (let i = 0; i < rows.length; i += 500) {
+    const batch = rows.slice(i, i + 500);
+    const { error } = await supabase
+      .from("country_production")
+      .upsert(batch, { onConflict: "iso,year" });
+    if (error) console.error(`[ETL:eia] Batch ${i} upsert error:`, error.message);
+  }
+
+  console.log(`[ETL:eia] Upserted ${rows.length} production records (${seen.size} unique iso/year pairs)`);
 }
 
 async function main() {
   console.log("[ETL:eia] Starting EIA data refresh...");
   await fetchProduction();
-  await fetchReserves();
   console.log("[ETL:eia] Done.");
 }
 

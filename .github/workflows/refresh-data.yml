@@ -30,6 +30,7 @@ jobs:
           FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
       - name: Fetch Comtrade trade flows
         run: node --import tsx/cjs etl/comtrade.ts
+        continue-on-error: true   # Requires paid Comtrade subscription key
         env:
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}

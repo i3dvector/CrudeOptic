@@ -181,10 +181,85 @@ async function seedRefinery() {
   console.log(`[seed] Seeded ${rows.length} refinery records`);
 }
 
+// ---------------------------------------------------------------------------
+// Proven oil reserves — billion barrels, 2022
+// Source: Energy Institute Statistical Review 2023, OPEC ASB 2022
+// ---------------------------------------------------------------------------
+interface ReservesRow {
+  iso: string;
+  year: number;
+  proven_reserves_bbl: number;
+  source: string;
+  updated_at: string;
+}
+
+const RESERVES_DATA: { iso: string; proven_reserves_bbl: number }[] = [
+  // Values in billion barrels → stored as actual barrels
+  { iso: "VE", proven_reserves_bbl: 303.8e9 },
+  { iso: "SA", proven_reserves_bbl: 267.0e9 },
+  { iso: "CA", proven_reserves_bbl: 168.1e9 }, // includes oil sands
+  { iso: "IR", proven_reserves_bbl: 208.6e9 },
+  { iso: "IQ", proven_reserves_bbl: 145.0e9 },
+  { iso: "KW", proven_reserves_bbl: 101.5e9 },
+  { iso: "AE", proven_reserves_bbl: 97.8e9  },
+  { iso: "RU", proven_reserves_bbl: 80.0e9  },
+  { iso: "LY", proven_reserves_bbl: 48.4e9  },
+  { iso: "US", proven_reserves_bbl: 38.2e9  },
+  { iso: "NG", proven_reserves_bbl: 37.1e9  },
+  { iso: "KZ", proven_reserves_bbl: 30.0e9  },
+  { iso: "CN", proven_reserves_bbl: 26.0e9  },
+  { iso: "QA", proven_reserves_bbl: 25.2e9  },
+  { iso: "BR", proven_reserves_bbl: 15.0e9  },
+  { iso: "DZ", proven_reserves_bbl: 12.2e9  },
+  { iso: "EC", proven_reserves_bbl: 8.3e9   },
+  { iso: "AO", proven_reserves_bbl: 8.2e9   },
+  { iso: "NO", proven_reserves_bbl: 8.1e9   },
+  { iso: "OM", proven_reserves_bbl: 5.4e9   },
+  { iso: "MX", proven_reserves_bbl: 5.8e9   },
+  { iso: "IN", proven_reserves_bbl: 4.7e9   },
+  { iso: "MY", proven_reserves_bbl: 3.5e9   },
+  { iso: "EG", proven_reserves_bbl: 3.3e9   },
+  { iso: "GB", proven_reserves_bbl: 2.5e9   },
+  { iso: "CO", proven_reserves_bbl: 2.0e9   },
+  { iso: "AU", proven_reserves_bbl: 1.2e9   },
+  { iso: "ID", proven_reserves_bbl: 2.4e9   },
+  { iso: "PK", proven_reserves_bbl: 0.4e9   },
+  { iso: "TH", proven_reserves_bbl: 0.3e9   },
+  { iso: "LY", proven_reserves_bbl: 48.4e9  },
+  { iso: "IQ", proven_reserves_bbl: 145.0e9 },
+];
+
+async function seedReserves() {
+  console.log("[seed] Seeding proven reserves...");
+
+  // Deduplicate by iso (keep last occurrence)
+  const seen = new Map<string, { iso: string; proven_reserves_bbl: number }>();
+  for (const d of RESERVES_DATA) seen.set(d.iso, d);
+
+  const rows: ReservesRow[] = Array.from(seen.values()).map((d) => ({
+    iso: d.iso,
+    year: YEAR,
+    proven_reserves_bbl: d.proven_reserves_bbl,
+    source: "EI Statistical Review 2023",
+    updated_at: new Date().toISOString(),
+  }));
+
+  for (let i = 0; i < rows.length; i += 100) {
+    const batch = rows.slice(i, i + 100);
+    const { error } = await supabase
+      .from("reserves")
+      .upsert(batch, { onConflict: "iso,year" });
+    if (error) console.error(`[seed] reserves batch ${i} error:`, error.message);
+  }
+
+  console.log(`[seed] Seeded ${rows.length} reserves records`);
+}
+
 async function main() {
   console.log(`[seed] Seeding annual data for ${YEAR}...`);
   await seedConsumption();
   await seedRefinery();
+  await seedReserves();
   console.log("[seed] Done.");
 }
 
