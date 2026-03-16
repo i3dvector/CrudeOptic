@@ -1,0 +1,65 @@
+[
+  {
+    "id": "hormuz",
+    "name": "Strait of Hormuz",
+    "coordinates": [56.3, 26.6],
+    "daily_flow_bpd": 21000000,
+    "affected_producers": ["SA", "IQ", "IR", "KW", "AE", "QA", "OM"],
+    "affected_importers": ["CN", "JP", "IN", "KR", "DE", "FR", "IT", "ES", "GB"],
+    "description": "Narrows between Iran and Oman. Handles ~21M bbl/day — roughly 1/3 of all seaborne-traded oil."
+  },
+  {
+    "id": "suez",
+    "name": "Suez Canal / SUMED Pipeline",
+    "coordinates": [32.3, 30.5],
+    "daily_flow_bpd": 5500000,
+    "affected_producers": ["SA", "IQ", "KW", "AE"],
+    "affected_importers": ["IT", "FR", "ES", "DE", "GB", "NL", "TR"],
+    "description": "Connects Red Sea to Mediterranean. ~5.5M bbl/day of oil and refined products transit through."
+  },
+  {
+    "id": "bab-el-mandeb",
+    "name": "Bab el-Mandeb Strait",
+    "coordinates": [43.3, 12.6],
+    "daily_flow_bpd": 6200000,
+    "affected_producers": ["SA", "IQ", "KW", "AE"],
+    "affected_importers": ["IT", "FR", "ES", "DE", "GB", "NL", "EG"],
+    "description": "Between Yemen and Djibouti/Eritrea. Links Indian Ocean to Red Sea route toward Suez Canal."
+  },
+  {
+    "id": "malacca",
+    "name": "Strait of Malacca",
+    "coordinates": [101.0, 2.5],
+    "daily_flow_bpd": 16000000,
+    "affected_producers": ["SA", "IQ", "IR", "KW", "AE", "AO", "NG"],
+    "affected_importers": ["CN", "JP", "KR", "ID", "TH", "AU"],
+    "description": "Between Malaysia and Indonesia. ~16M bbl/day. Primary route for Persian Gulf oil to East Asia."
+  },
+  {
+    "id": "bosphorus",
+    "name": "Turkish Straits (Bosphorus)",
+    "coordinates": [29.0, 41.1],
+    "daily_flow_bpd": 2400000,
+    "affected_producers": ["RU", "KZ", "AZ"],
+    "affected_importers": ["IT", "FR", "ES", "DE", "NL"],
+    "description": "Connects Black Sea to Mediterranean. ~2.4M bbl/day. Key route for Russian and Caspian oil exports."
+  },
+  {
+    "id": "panama",
+    "name": "Panama Canal",
+    "coordinates": [-79.9, 9.1],
+    "daily_flow_bpd": 900000,
+    "affected_producers": ["EC", "CO", "VE"],
+    "affected_importers": ["US", "CN"],
+    "description": "Connects Pacific and Atlantic. ~0.9M bbl/day. Mainly U.S. refined product and Latin American crude."
+  },
+  {
+    "id": "cape",
+    "name": "Cape of Good Hope",
+    "coordinates": [18.5, -34.4],
+    "daily_flow_bpd": 6000000,
+    "affected_producers": ["SA", "IQ", "IR", "AO", "NG"],
+    "affected_importers": ["US", "BR", "CN"],
+    "description": "Alternative to Suez Canal for supertankers (VLCC). ~6M bbl/day. Longer but no canal size restrictions."
+  }
+]

@@ -1,0 +1,175 @@
+{
+  "IR": {
+    "iso": "IR",
+    "sanctions": [
+      {
+        "body": "OFAC",
+        "type": "Comprehensive sanctions",
+        "since": "1979",
+        "details": "U.S. comprehensive sanctions on Iran's oil, banking, and shipping sectors"
+      },
+      {
+        "body": "EU",
+        "type": "Oil embargo",
+        "since": "2012",
+        "details": "EU embargo on Iranian crude oil imports"
+      }
+    ],
+    "embargoes": [
+      {
+        "imposed_by": "United States",
+        "target_sector": "Oil exports",
+        "since": "2018",
+        "details": "Re-imposed after JCPOA withdrawal; targets all Iranian oil exports"
+      }
+    ],
+    "opec_member": true,
+    "opec_quota_bpd": null,
+    "trade_restrictions": ["U.S. secondary sanctions on buyers of Iranian oil", "SWIFT access restricted"],
+    "notes": "Iran holds world's 4th-largest proven reserves. Sanctions severely limit export capacity."
+  },
+  "RU": {
+    "iso": "RU",
+    "sanctions": [
+      {
+        "body": "OFAC",
+        "type": "Sectoral sanctions",
+        "since": "2022",
+        "details": "Sanctions on Russian oil sector, price cap of $60/bbl on seaborne Russian crude"
+      },
+      {
+        "body": "EU",
+        "type": "Oil import ban",
+        "since": "2022",
+        "details": "EU ban on seaborne Russian crude oil imports (Dec 2022) and refined products (Feb 2023)"
+      }
+    ],
+    "embargoes": [
+      {
+        "imposed_by": "G7 + EU + Australia",
+        "target_sector": "Price cap coalition",
+        "since": "2022",
+        "details": "$60/bbl price cap on Russian seaborne crude using Western services"
+      }
+    ],
+    "opec_member": false,
+    "opec_quota_bpd": 9949000,
+    "trade_restrictions": ["G7 price cap on crude ($60/bbl) and refined products", "EU seaborne import ban", "Insurance and shipping restrictions"],
+    "notes": "OPEC+ member (not OPEC). World's 3rd-largest producer. Redirected exports to India and China since 2022."
+  },
+  "VE": {
+    "iso": "VE",
+    "sanctions": [
+      {
+        "body": "OFAC",
+        "type": "Sectoral sanctions",
+        "since": "2019",
+        "details": "Sanctions on PDVSA (state oil company) and oil sector"
+      }
+    ],
+    "embargoes": [],
+    "opec_member": true,
+    "opec_quota_bpd": null,
+    "trade_restrictions": ["U.S. sanctions on PDVSA", "Limited licenses issued for specific transactions"],
+    "notes": "Holds world's largest proven reserves but production collapsed due to mismanagement and sanctions."
+  },
+  "SA": {
+    "iso": "SA",
+    "sanctions": [],
+    "embargoes": [],
+    "opec_member": true,
+    "opec_quota_bpd": 8978000,
+    "trade_restrictions": [],
+    "notes": "OPEC's de facto leader. Largest spare production capacity globally. Swing producer."
+  },
+  "IQ": {
+    "iso": "IQ",
+    "sanctions": [],
+    "embargoes": [],
+    "opec_member": true,
+    "opec_quota_bpd": 4220000,
+    "trade_restrictions": [],
+    "notes": "OPEC member. 2nd-largest OPEC producer. Ongoing disputes over Kurdish autonomous region exports."
+  },
+  "AE": {
+    "iso": "AE",
+    "sanctions": [],
+    "embargoes": [],
+    "opec_member": true,
+    "opec_quota_bpd": 2912000,
+    "trade_restrictions": [],
+    "notes": "OPEC member. Lobbying for higher production quota. Major refining and trading hub (Fujairah)."
+  },
+  "KW": {
+    "iso": "KW",
+    "sanctions": [],
+    "embargoes": [],
+    "opec_member": true,
+    "opec_quota_bpd": 2418000,
+    "trade_restrictions": [],
+    "notes": "OPEC founding member. Operates Neutral Zone jointly with Saudi Arabia."
+  },
+  "LY": {
+    "iso": "LY",
+    "sanctions": [],
+    "embargoes": [],
+    "opec_member": true,
+    "opec_quota_bpd": null,
+    "trade_restrictions": [],
+    "notes": "OPEC member. Exempt from quotas due to civil conflict. Production highly volatile."
+  },
+  "NG": {
+    "iso": "NG",
+    "sanctions": [],
+    "embargoes": [],
+    "opec_member": true,
+    "opec_quota_bpd": 1380000,
+    "trade_restrictions": [],
+    "notes": "Africa's largest oil producer. Chronic underproduction vs quota due to theft, pipeline sabotage."
+  },
+  "SY": {
+    "iso": "SY",
+    "sanctions": [
+      {
+        "body": "OFAC",
+        "type": "Comprehensive sanctions",
+        "since": "2011",
+        "details": "U.S. sanctions on Syrian oil and energy sector"
+      },
+      {
+        "body": "EU",
+        "type": "Oil embargo",
+        "since": "2011",
+        "details": "EU ban on Syrian oil imports"
+      }
+    ],
+    "embargoes": [
+      {
+        "imposed_by": "United States",
+        "target_sector": "Energy",
+        "since": "2011",
+        "details": "Comprehensive sanctions including oil sector"
+      }
+    ],
+    "opec_member": false,
+    "opec_quota_bpd": null,
+    "trade_restrictions": ["Comprehensive U.S. and EU sanctions"],
+    "notes": "Minimal production. Oil fields largely under various faction control."
+  },
+  "KP": {
+    "iso": "KP",
+    "sanctions": [
+      {
+        "body": "UN",
+        "type": "Oil import cap",
+        "since": "2017",
+        "details": "UN Security Council cap on refined petroleum imports (500K bbl/year)"
+      }
+    ],
+    "embargoes": [],
+    "opec_member": false,
+    "opec_quota_bpd": null,
+    "trade_restrictions": ["UN cap on petroleum imports", "Comprehensive U.S. sanctions"],
+    "notes": "Negligible domestic production. Subject to strict UN petroleum import limits."
+  }
+}
