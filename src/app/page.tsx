@@ -8,15 +8,53 @@ import PriceChart from "@/components/PriceChart";
 import { COUNTRIES } from "@/lib/countries";
 import { Globe2, Droplets, BarChart3, TrendingUp } from "lucide-react";
 import Link from "next/link";
+import { createClient } from "@supabase/supabase-js";
+
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+);
 
 export const revalidate = 300;
 
 async function getOverviewData() {
   try {
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
-    const res = await fetch(`${baseUrl}/api/overview`, { next: { revalidate: 300 } });
-    if (!res.ok) return null;
-    return res.json();
+    const [pricesRes, productionRes] = await Promise.all([
+      supabase.from("live_prices").select("*"),
+      supabase
+        .from("country_production")
+        .select("*")
+        .order("year", { ascending: false })
+        .limit(200),
+    ]);
+
+    const productionData = productionRes.data ?? [];
+    const latestYear = productionData[0]?.year ?? new Date().getFullYear() - 1;
+    const latestProduction = productionData.filter((d: { year: number }) => d.year === latestYear);
+    const sorted = [...latestProduction].sort(
+      (a: { production_bpd: number | null }, b: { production_bpd: number | null }) =>
+        (b.production_bpd ?? 0) - (a.production_bpd ?? 0)
+    );
+
+    const topProducers = sorted.slice(0, 10).map((d: { iso: string; production_bpd: number | null }, i: number) => ({
+      iso: d.iso,
+      name: d.iso,
+      production_bpd: d.production_bpd,
+      rank_producer: i + 1,
+    }));
+
+    const globalProduction = latestProduction.reduce(
+      (sum: number, d: { production_bpd: number | null }) => sum + (d.production_bpd ?? 0),
+      0
+    );
+
+    return {
+      data: {
+        top_producers: topProducers,
+        live_prices: pricesRes.data ?? [],
+        global_production_bpd: globalProduction,
+      },
+    };
   } catch {
     return null;
   }
@@ -24,10 +62,21 @@ async function getOverviewData() {
 
 async function getPriceHistory() {
   try {
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
-    const res = await fetch(`${baseUrl}/api/prices`, { next: { revalidate: 300 } });
-    if (!res.ok) return null;
-    return res.json();
+    const { data } = await supabase
+      .from("price_history")
+      .select("*")
+      .order("date", { ascending: true })
+      .limit(730);
+
+    if (!data || data.length === 0) return null;
+
+    const history = data.map((d: { date: string; benchmark: string; price: number }) => ({
+      date: d.date,
+      benchmark: d.benchmark,
+      price: d.price,
+    }));
+
+    return { data: { history } };
   } catch {
     return null;
   }

@@ -13,6 +13,12 @@ import Link from "next/link";
 import geopoliticsRaw from "@/data/geopolitics.json";
 import type { GeopoliticsEntry, ConsumptionBreakdown } from "@/types/oil";
 import dynamic from "next/dynamic";
+import { createClient } from "@supabase/supabase-js";
+
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+);
 
 const SankeyChart = dynamic(() => import("@/components/SankeyChart"), {
   ssr: false,
@@ -24,18 +30,97 @@ const geopoliticsMap = geopoliticsRaw as Record<string, GeopoliticsEntry>;
 
 async function getCountryData(iso: string) {
   try {
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
-    const [countryRes, tradeRes] = await Promise.all([
-      fetch(`${baseUrl}/api/country/${iso}`, { next: { revalidate: 3600 } }),
-      fetch(`${baseUrl}/api/trade/${iso}`, { next: { revalidate: 43200 } }),
+    const [
+      productionRes,
+      consumptionRes,
+      reservesRes,
+      pumpRes,
+      refineryRes,
+      importsRes,
+      exportsRes,
+      priceHistoryRes,
+    ] = await Promise.all([
+      supabase
+        .from("country_production")
+        .select("*")
+        .eq("iso", iso)
+        .order("year", { ascending: false })
+        .limit(10),
+      supabase
+        .from("consumption_by_type")
+        .select("*")
+        .eq("iso", iso)
+        .order("year", { ascending: false })
+        .limit(1),
+      supabase
+        .from("reserves")
+        .select("*")
+        .eq("iso", iso)
+        .order("year", { ascending: false })
+        .limit(1),
+      supabase
+        .from("pump_prices")
+        .select("*")
+        .eq("iso", iso)
+        .limit(1),
+      supabase
+        .from("refinery_capacity")
+        .select("*")
+        .eq("iso", iso)
+        .order("year", { ascending: false })
+        .limit(1),
+      supabase
+        .from("trade_flows")
+        .select("*")
+        .eq("target_iso", iso)
+        .order("value_usd", { ascending: false })
+        .limit(20),
+      supabase
+        .from("trade_flows")
+        .select("*")
+        .eq("source_iso", iso)
+        .order("value_usd", { ascending: false })
+        .limit(20),
+      supabase
+        .from("price_history")
+        .select("*")
+        .order("date", { ascending: true })
+        .limit(365),
     ]);
 
-    const countryJson = countryRes.ok ? await countryRes.json() : null;
-    const tradeJson = tradeRes.ok ? await tradeRes.json() : null;
+    const latestProduction = productionRes.data?.[0];
+    const latestReserves = reservesRes.data?.[0];
+
+    const reservesDays =
+      latestProduction?.production_bpd && latestReserves?.proven_reserves_bbl
+        ? Math.round(
+            latestReserves.proven_reserves_bbl / latestProduction.production_bpd
+          )
+        : null;
 
     return {
-      country: countryJson?.data ?? null,
-      trade: tradeJson?.data ?? null,
+      country: {
+        summary: {
+          iso,
+          name: iso,
+          production_bpd: latestProduction?.production_bpd ?? null,
+          consumption_bpd: null,
+          net_imports_bpd: null,
+          reserves_days: reservesDays,
+        },
+        consumption: consumptionRes.data?.[0] ?? null,
+        pump_price: pumpRes.data?.[0] ?? null,
+        refinery: refineryRes.data?.[0] ?? null,
+        production_history: (productionRes.data ?? []).map((d: { year: number; production_bpd: number }) => ({
+          year: d.year,
+          value: d.production_bpd,
+        })),
+        price_history: priceHistoryRes.data ?? [],
+      },
+      trade: {
+        imports: importsRes.data ?? [],
+        exports: exportsRes.data ?? [],
+      },
     };
   } catch {
     return { country: null, trade: null };
@@ -195,8 +280,8 @@ export default async function CountryPage({
         {/* Charts grid */}
         <div className="grid lg:grid-cols-2 gap-6 mb-6">
           {/* Import sources */}
-          {trade?.imports?.length > 0 ? (
-            <SankeyChart flows={trade.imports} type="imports" iso={iso} />
+          {(trade?.imports?.length ?? 0) > 0 ? (
+            <SankeyChart flows={trade!.imports} type="imports" iso={iso} />
           ) : (
             <div className="glass-card p-6">
               <h3 className="font-heading text-sm font-bold text-white mb-2">Import Sources</h3>
@@ -205,8 +290,8 @@ export default async function CountryPage({
           )}
 
           {/* Export destinations */}
-          {trade?.exports?.length > 0 ? (
-            <SankeyChart flows={trade.exports} type="exports" iso={iso} />
+          {(trade?.exports?.length ?? 0) > 0 ? (
+            <SankeyChart flows={trade!.exports} type="exports" iso={iso} />
           ) : (
             <div className="glass-card p-6">
               <h3 className="font-heading text-sm font-bold text-white mb-2">Export Destinations</h3>
