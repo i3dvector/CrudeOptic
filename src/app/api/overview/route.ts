@@ -44,15 +44,12 @@ export async function GET() {
       (a, b) => (b.production_bpd ?? 0) - (a.production_bpd ?? 0)
     );
 
-    const topProducers = sorted.slice(0, 10).map((d, i) => ({
+    // All producers for map coloring + top 10 for ranking
+    const topProducers = sorted.map((d, i) => ({
       iso: d.iso,
       name: d.iso,
       production_bpd: d.production_bpd,
-      consumption_bpd: null,
-      net_imports_bpd: null,
-      reserves_days: null,
       rank_producer: i + 1,
-      rank_consumer: null,
     }));
 
     const globalProduction = latestProduction.reduce(
