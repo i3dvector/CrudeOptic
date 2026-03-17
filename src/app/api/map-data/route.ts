@@ -11,14 +11,14 @@ export const revalidate = 3600; // 1 hour
 export async function GET() {
   try {
     const [consumptionRes, reservesRes] = await Promise.all([
-      supabase.from("consumption_by_type").select("iso, total_thousand_bpd").order("year", { ascending: false }),
+      supabase.from("consumption_by_type").select("iso, total").order("year", { ascending: false }),
       supabase.from("reserves").select("iso, proven_reserves_bbl"),
     ]);
 
     const consumption: Record<string, number> = {};
     for (const row of consumptionRes.data ?? []) {
-      if (row.iso && row.total_thousand_bpd && !consumption[row.iso]) {
-        consumption[row.iso] = row.total_thousand_bpd;
+      if (row.iso && row.total && !consumption[row.iso]) {
+        consumption[row.iso] = row.total;
       }
     }
 
