@@ -51,15 +51,19 @@ export default function ConsumptionDonut({ data }: Props) {
             </Pie>
             <Tooltip
               contentStyle={{
-                background: "rgba(17,17,17,0.9)",
+                background: "rgba(17,17,17,0.95)",
                 border: "1px solid rgba(255,255,255,0.1)",
                 borderRadius: "8px",
+                color: "#E5E7EB",
               }}
-              formatter={(v: number) => [`${v.toFixed(1)} kbd`, ""]}
+              itemStyle={{ color: "#E5E7EB" }}
+              labelStyle={{ color: "#9CA3AF" }}
+              formatter={(v: number) => [`${v.toFixed(0)} kbd`, ""]}
             />
             <Legend
               iconSize={8}
-              formatter={(v) => <span style={{ color: "#9CA3AF", fontSize: 12 }}>{v}</span>}
+              wrapperStyle={{ color: "#D1D5DB" }}
+              formatter={(v) => <span style={{ color: "#D1D5DB", fontSize: 12 }}>{v}</span>}
             />
           </PieChart>
         </ResponsiveContainer>

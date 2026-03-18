@@ -108,6 +108,7 @@ async function getCountryData(iso: string) {
           net_imports_bpd: null,
           reserves_days: reservesDays,
         },
+        proven_reserves_bbl: latestReserves?.proven_reserves_bbl ?? null,
         consumption: consumptionRes.data?.[0] ?? null,
         pump_price: pumpRes.data?.[0] ?? null,
         refinery: refineryRes.data?.[0] ?? null,
@@ -143,7 +144,7 @@ export default async function CountryPage({
   const summary = country?.summary;
   const production = summary?.production_bpd;
   const reservesDays = summary?.reserves_days;
-  const latestReserves = country?.production_history?.[0];
+  const provenReservesBbl = country?.proven_reserves_bbl ?? null;
 
   // Net importer / exporter
   const totalImports = (trade?.imports ?? []).reduce(
@@ -314,7 +315,7 @@ export default async function CountryPage({
           {/* Reserves gauge */}
           <ReservesGauge
             reservesDays={reservesDays ?? null}
-            reservesBbl={latestReserves?.value ?? null}
+            reservesBbl={provenReservesBbl}
           />
         </div>
 

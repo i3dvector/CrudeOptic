@@ -134,26 +134,28 @@ export default function WorldMap({
 
   const getTooltip = useCallback(
     (iso: string): string => {
-      const name = COUNTRIES[iso]?.name ?? iso;
+      const country = COUNTRIES[iso];
+      const flag = country?.flag ? `${country.flag} ` : "";
+      const name = country?.name ?? iso;
       switch (mode) {
         case "production": {
           const val = productionData[iso];
-          return val ? `${name}: ${(val / 1_000_000).toFixed(2)}M bbl/d` : name;
+          return val ? `${flag}${name}: ${(val / 1_000_000).toFixed(2)}M bbl/d` : `${flag}${name}`;
         }
         case "consumption": {
           const val = consumptionData[iso];
-          return val ? `${name}: ${val.toLocaleString()} K bbl/d` : name;
+          return val ? `${flag}${name}: ${val.toLocaleString()} K bbl/d` : `${flag}${name}`;
         }
         case "reserves": {
           const val = reservesData[iso];
-          return val ? `${name}: ${val.toFixed(1)}B bbl` : name;
+          return val ? `${flag}${name}: ${val.toFixed(1)}B bbl` : `${flag}${name}`;
         }
         case "sanctions":
-          return sanctionedCountries.includes(iso) ? `${name} — Sanctioned` : name;
+          return sanctionedCountries.includes(iso) ? `${flag}${name} — Sanctioned` : `${flag}${name}`;
         case "news":
-          return alertedCountries.includes(iso) ? `${name} — Active alerts` : name;
+          return alertedCountries.includes(iso) ? `${flag}${name} — Active alerts` : `${flag}${name}`;
         default:
-          return name;
+          return `${flag}${name}`;
       }
     },
     [mode, productionData, consumptionData, reservesData, sanctionedCountries, alertedCountries]
