@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { AlertTriangle, Shield, MapPin } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import type { NewsAlert } from "@/types/oil";
-import { COUNTRIES } from "@/lib/countries";
+import FlagIcon from "@/components/FlagIcon";
 
 const SEVERITY_STYLES = {
   critical: "border-red-500/50 bg-red-500/10 text-red-400",
@@ -76,13 +76,12 @@ export default function AlertsBanner() {
                         </span>
                       )}
                       {alert.countries?.length > 0 && (
-                        <span>
-                          {alert.countries
-                            .slice(0, 4)
-                            .map((iso) => COUNTRIES[iso]?.flag ?? iso)
-                            .join(" ")}
+                        <span className="flex items-center gap-1">
+                          {alert.countries.slice(0, 4).map((iso) => (
+                            <FlagIcon key={iso} iso={iso} size={14} />
+                          ))}
                           {alert.countries.length > 4 &&
-                            ` +${alert.countries.length - 4}`}
+                            <span>+{alert.countries.length - 4}</span>}
                         </span>
                       )}
                     </div>

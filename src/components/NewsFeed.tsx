@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { ExternalLink, Clock } from "lucide-react";
 import { motion } from "framer-motion";
 import type { NewsHeadline } from "@/types/oil";
-import { COUNTRIES } from "@/lib/countries";
+import FlagIcon from "@/components/FlagIcon";
 
 export default function NewsFeed() {
   const [headlines, setHeadlines] = useState<NewsHeadline[]>([]);
@@ -69,11 +69,9 @@ export default function NewsFeed() {
                   {timeAgo(h.published_at)}
                 </span>
                 {h.countries?.length > 0 && (
-                  <span className="flex gap-1">
+                  <span className="flex items-center gap-1">
                     {h.countries.slice(0, 3).map((iso) => (
-                      <span key={iso} title={COUNTRIES[iso]?.name}>
-                        {COUNTRIES[iso]?.flag ?? iso}
-                      </span>
+                      <FlagIcon key={iso} iso={iso} size={16} />
                     ))}
                   </span>
                 )}

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { COUNTRIES, formatNumber } from "@/lib/countries";
+import FlagIcon from "@/components/FlagIcon";
 
 interface CountryCardProps {
   iso: string;
@@ -19,7 +20,6 @@ export default function CountryCard({
 }: CountryCardProps) {
   const country = COUNTRIES[iso];
   const name = country?.name ?? iso;
-  const flag = country?.flag ?? "";
 
   return (
     <Link href={`/country/${iso.toLowerCase()}`}>
@@ -30,7 +30,7 @@ export default function CountryCard({
       >
         <div className="flex items-start justify-between mb-2">
           <div className="flex items-center gap-2">
-            <span className="text-2xl">{flag}</span>
+            <FlagIcon iso={iso} size={28} />
             <div>
               <h3 className="text-white font-heading font-semibold text-sm">
                 {name}

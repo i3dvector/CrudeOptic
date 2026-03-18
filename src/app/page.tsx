@@ -9,6 +9,7 @@ import { COUNTRIES } from "@/lib/countries";
 import { Globe2, Droplets, BarChart3, TrendingUp } from "lucide-react";
 import Link from "next/link";
 import { createClient } from "@supabase/supabase-js";
+import FlagIcon from "@/components/FlagIcon";
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -236,7 +237,7 @@ export default async function HomePage() {
                 href={`/country/${c.iso.toLowerCase()}`}
                 className="glass-card-hover p-3 flex items-center gap-2 text-sm"
               >
-                <span className="text-xl">{c.flag}</span>
+                <FlagIcon iso={c.iso} size={24} />
                 <span className="text-gray-300 truncate font-medium">
                   {c.name}
                 </span>

@@ -14,6 +14,7 @@ import geopoliticsRaw from "@/data/geopolitics.json";
 import type { GeopoliticsEntry, ConsumptionBreakdown } from "@/types/oil";
 import dynamic from "next/dynamic";
 import { createClient } from "@supabase/supabase-js";
+import FlagIcon from "@/components/FlagIcon";
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -181,7 +182,7 @@ export default async function CountryPage({
         {/* Header */}
         <div className="glass-card p-6 mb-6">
           <div className="flex flex-wrap items-start gap-4">
-            <span className="text-6xl">{meta.flag}</span>
+            <FlagIcon iso={iso} size={56} className="rounded" />
             <div className="flex-1 min-w-0">
               <div className="flex flex-wrap items-center gap-3 mb-2">
                 <h1 className="font-heading text-3xl font-bold text-white">
