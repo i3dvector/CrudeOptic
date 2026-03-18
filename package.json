@@ -14,6 +14,7 @@
     "etl:comtrade": "node --env-file=.env.local --import tsx/cjs etl/comtrade.ts",
     "etl:pump": "node --env-file=.env.local --import tsx/cjs etl/pump-prices.ts",
     "etl:reserves": "node --env-file=.env.local --import tsx/cjs etl/reserves.ts",
+    "etl:trade": "node --env-file=.env.local --import tsx/cjs etl/wits-trade.ts",
     "seed": "node --env-file=.env.local --import tsx/cjs scripts/seed-annual-data.ts"
   },
   "dependencies": {

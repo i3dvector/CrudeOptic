@@ -88,6 +88,12 @@ export default function ReservesGauge({ reservesDays, reservesBbl }: Props) {
           </div>
         </>
       )}
+
+      <p className="text-[11px] text-gray-600 mt-3 leading-relaxed">
+        Proven reserves = crude oil in the ground. Many countries import most of
+        their refined fuel (petrol, diesel, jet fuel), so high reserves
+        don&apos;t guarantee fuel supply security.
+      </p>
     </div>
   );
 }
