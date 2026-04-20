@@ -147,10 +147,10 @@ export default async function HomePage() {
               Explore the Map
             </Link>
             <Link
-              href="/country/sa"
+              href="/country/us"
               className="px-6 py-3 rounded-xl glass-card hover:bg-white/10 transition-colors text-white font-medium"
             >
-              View Saudi Arabia →
+              View United States →
             </Link>
           </div>
         </section>
