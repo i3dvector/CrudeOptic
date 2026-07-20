@@ -1,0 +1,40 @@
+name: Keep Alive
+
+# Prevents GitHub from auto-disabling the scheduled data-refresh workflows.
+# GitHub disables cron workflows after 60 days of repository inactivity.
+# This job runs weekly, bumps a timestamp file (resetting the inactivity clock),
+# and defensively re-enables all refresh workflows in case any got disabled.
+
+on:
+  schedule:
+    - cron: '17 4 * * 1'  # Every Monday at 04:17 UTC
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+  actions: write
+
+jobs:
+  keep-alive:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Bump keep-alive timestamp
+        run: |
+          mkdir -p .github
+          date -u +"%Y-%m-%dT%H:%M:%SZ" > .github/last-keepalive.txt
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add .github/last-keepalive.txt
+          git commit -m "chore: keep-alive [skip ci]" || echo "nothing to commit"
+          git push
+
+      - name: Re-enable refresh workflows
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          for wf in refresh-data.yml refresh-news.yml refresh-prices.yml refresh-pump.yml refresh-reserves.yml refresh-trade.yml; do
+            gh workflow enable "$wf" 2>/dev/null || true
+          done
