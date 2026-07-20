@@ -15,14 +15,17 @@ export async function GET() {
       supabase
         .from("price_history")
         .select("*")
-        .order("date", { ascending: true })
-        .limit(730), // ~2 years of daily data
+        .order("date", { ascending: false })
+        .limit(730), // newest ~2 years of daily data
     ]);
+
+    // Fetched newest-first for the limit; reverse to chronological for charting.
+    const history = (historyRes.data ?? []).slice().reverse();
 
     return NextResponse.json({
       data: {
         live: liveRes.data ?? [],
-        history: historyRes.data ?? [],
+        history,
       },
       updated_at: new Date().toISOString(),
       source: "supabase",
