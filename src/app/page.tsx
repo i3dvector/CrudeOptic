@@ -66,16 +66,20 @@ async function getPriceHistory() {
     const { data } = await supabase
       .from("price_history")
       .select("*")
-      .order("date", { ascending: true })
+      .order("date", { ascending: false })
       .limit(730);
 
     if (!data || data.length === 0) return null;
 
-    const history = data.map((d: { date: string; benchmark: string; price: number }) => ({
-      date: d.date,
-      benchmark: d.benchmark,
-      price: d.price,
-    }));
+    // Fetched newest-first for the limit; reverse to chronological for charting.
+    const history = data
+      .slice()
+      .reverse()
+      .map((d: { date: string; benchmark: string; price: number }) => ({
+        date: d.date,
+        benchmark: d.benchmark,
+        price: d.price,
+      }));
 
     return { data: { history } };
   } catch {

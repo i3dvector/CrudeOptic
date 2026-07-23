@@ -85,7 +85,7 @@ async function getCountryData(iso: string) {
       supabase
         .from("price_history")
         .select("*")
-        .order("date", { ascending: true })
+        .order("date", { ascending: false })
         .limit(365),
     ]);
 
